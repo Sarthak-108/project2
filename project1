@@ -1,0 +1,147 @@
+#include “esp_camera. h”
+#include “ESP 32_Mail client. h”
+#include <SPI FFS. h>
+#include <wiFi. h>
+const char * ssid = “M_X2”
+const char * password = “12345678”
+#define email Sender Account “iotkits4u.gmail.com”
+#define email Sender Password “cxqnasdrtwbcipdz”
+#define PWDN_GPIO_NUM    32
+#define XCLK_GPIO_NUM     0
+#define SI OD_GPIO_NUM     26
+#define SI OC_GPIO_NUM     27
+
+#define Y9_GPIO_NUM          35
+#define Y8_GPIO_NUM          34
+#define Y7_GPIO_NUM          39
+#define Y6_GPIO_NUM          36
+#define Y5_GPIO_NUM          21
+#define Y4_GPIO_NUM          19
+#define Y3 _GPIO_NUM         18
+#define Y2_GPIO_NUM          5
+#define VSYNC_GPIO_NUM  25
+#define HREF_GPIO_NUM     23
+#define PCLK_GPIO_NUM     22
+
+#define LED_OnBoard  2
+#define IR_IN             …
+[6:22 pm, 30/07/2024] Sarthak Patil: #define FILE_PHOTO “/photo.jpg”
+
+Void setup()
+{
+
+pinMode(IR_IN. INPUT);
+pinMode(PASS_OK. INPUT);
+pinMode(STS_LED. OUTPUT);
+pinMode(LED_OnBoard. INPUT);
+
+delay(100);
+
+wiFi. Begin(ssid.password);
+Serial.print(“Connecting to wiFi…”);
+while(wiFi.status()!=wl_CONNECTED)
+{
+delay(500);
+Serial.print(“ . ”);
+}
+Serial.println(“wiFi CONNECTED OK”);
+Digital write(STS_LED.1);
+camera_config_t config;
+config.| edc_channel = LEDC_CHANNEL_0;
+config. pin_d0 = Y2_GPIO_NUM;
+config. pin_d1 = Y3_GPIO_NUM;
+config. pin_d2 = Y4_GPIO_NUM;
+config. pin_d3 = Y5_GPIO_NUM;
+config. pin_d4 = Y6_GPIO_NUM;
+config. pin_d5 = Y7_GPIO_NUM;
+config. pin_d6 = Y8_GPIO_NUM;
+config. pin_d7 = Y9_GPIO_NUM;
+config. pin_vsync = VSYNC_GPIO_NUM;
+config. pin_href = HREF_GPIO_NUM;
+[6:22 pm, 30/07/2024] Sarthak Patil: config. pin_sscb_sda = SIOD_GPIO_NUM;
+config. pin_sscb_scl = SIOC_GPIO_NUM;
+config. pin_sscb_pwdn = PWDN_GPIO_NUM;
+config. pin_sscb_reset = RESET_GPIO_NUM;
+
+esp_err_t err = esp_camera_init(&config);
+if (err! = ESP_OK)
+{
+	Serial.printf(“Camera init failed with error 0x%x.err”);
+	return();
+}
+
+
+}
+
+void loop()
+{
+
+if(digital Read(PASS_OK) == 0)
+{
+obj = 0;
+sendPhoto();;
+}
+       }
+}
+
+bool checkPhoto(is:: FS&fs)
+{
+	File f _pic = fs.open(FILE_PHOTO);
+	unsigned int pic_sz = f _pic.size();
+	return (pic_sz<100);
+}
+[6:22 pm, 30/07/2024] Sarthak Patil: void capturePhotoSaveSpiffs(void)
+{
+camera_fb_t*fb=NULL;
+do
+{
+	Serial.printtln(“Taking photo…”);
+
+	fb = esp_camera_fb_get();
+	if (!fb)
+{
+	Serial.println(“Camera capture failed”);
+	return;
+}
+File file = SPIFFS.open(FILE_PHOTO.FILE_WRITE);
+If(!file)
+{
+	Serial.println(“Failed to open file in writing mode”);
+}
+else
+{
+	file.write(fb->buf.fb->len);
+}
+file.close();
+esp_camera_fb_return(fb);
+ok = checkPhoto(SPIFFS);
+}
+while(!ok);
+}
+
+Void sendPhoto(void)
+{
+digitalWrite(STS_LED.1);
+capturePhotoSaveSpiffs();
+[6:22 pm, 30/07/2024] Sarthak Patil: Serial.println(“Sending email…”);
+smtpData.setSender(“ESP-Security SYS”.email Sender Account);
+smtpData.setPriority(“HIGH”);
+if(obj == 1)
+{
+	smtpData.setSubject(“OBJECT_DETECTED !”);
+	smtpDta.setMessage(“<h2> This Mail Send By VISITOR’S AUTHENTICATION SYSTEM</h2>”.true);
+}
+
+smtpData.addRecipt(“hobbykits4u@rediffmail.com”);
+smtpData.addRecipt(“rakeshkumar.ar1212@gmail.com”);
+smtpData.addRecipt(“intriscinnovations@gmail.com”);
+smtpData.addAttachFile(FILE_PHOTO. “image/jpg”);
+smtpData.setFileStorageType(Mail Clinet Storage Type::SPIFFS);
+smtpData.setSendCallback(sendCallback);
+digitalWrite(STS_LED.0);
+}
+
+Void sendCallback(SendStatus msg)
+{
+	Serial.println(msg.info());
+}
